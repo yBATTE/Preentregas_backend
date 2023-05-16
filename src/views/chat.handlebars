@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chat</title>
+<style>
+    #chat-container {
+    height: 300px;
+    overflow-y: scroll;
+    }
+</style>
+</head>
+<body>
+<h1>Chat</h1>
+
+<div id="chat-container">
+    {{#each messages}}
+    <p><strong>{{this.user}}:</strong> {{this.message}}</p>
+    {{/each}}
+</div>
+
+<form id="chat-form">
+    <input type="text" id="user-input" placeholder="Usuario">
+    <input type="text" id="message-input" placeholder="Mensaje">
+    <button type="submit">Enviar</button>
+</form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    socket.on('connect', () => {
+    console.log('Conectado al servidor de sockets');
+    });
+
+    socket.on('disconnect', () => {
+    console.log('Desconectado del servidor de sockets');
+    });
+
+    socket.on('chat message', (data) => {
+    addMessage(data.user, data.message);
+    });
+
+
+    function addMessage(user, message) {
+    const chatContainer = document.getElementById('chat-container');
+    const newMessage = document.createElement('p');
+    newMessage.innerHTML = `<strong>${user}:</strong> ${message}`;
+    chatContainer.appendChild(newMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+
+    document.getElementById('chat-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const userInput = document.getElementById('user-input');
+    const messageInput = document.getElementById('message-input');
+
+    const user = userInput.value.trim();
+    const message = messageInput.value.trim();
+
+    if (user && message) {
+        socket.emit('chat message', { user, message });
+        addMessage(user, message);
+
+        messageInput.value = '';
+    }
+    });
+</script>
+</body>
+</html>

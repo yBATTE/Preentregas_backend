@@ -1,10 +1,12 @@
 import fs from 'fs';
-
+import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const url = 'mongodb+srv://<username>:<password>@<clustername>.mongodb.net/<dbname>?retryWrites=true&w=majority';
+
 
 class Contenedor {
     constructor(fileRoute) {
@@ -76,14 +78,14 @@ class Contenedor {
             });
             return contentSelected
                 ? {
-                      status: 'SUCCESS',
-                      response: `Item with the id ${num}`,
-                      element: contentSelected,
-                  }
+                    status: 'SUCCESS',
+                    response: `Item with the id ${num}`,
+                    element: contentSelected,
+                }
                 : {
-                      status: 'WARNING',
-                      response: `There is no item with the id ${num}`,
-                  };
+                    status: 'WARNING',
+                    response: `There is no item with the id ${num}`,
+                };
         } catch (error) {
             console.log(error);
             return { status: 'ERROR', response: error };
